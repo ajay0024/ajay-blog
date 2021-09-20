@@ -19,7 +19,7 @@ Bootstrap(app)
 
 ##CONNECT TO DB
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
-uri = os.environ.get("DATABASE_URL")  # or other relevant config var
+uri = os.environ.get("DATABASE_URL",  "sqlite:///blog.db")  # or other relevant config var
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
@@ -34,6 +34,10 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
+
+@app.context_processor
+def inject_now():
+    return {'year': date.today().year}
 
 
 gravatar = Gravatar(app,
